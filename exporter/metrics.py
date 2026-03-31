@@ -1,8 +1,73 @@
-"""Prometheus metric definitions for Aruba Instant Exporter."""
+"""Prometheus metric definitions for Aruba Instant Exporter.
 
-from prometheus_client import Gauge, Info
+Aruba Instant Exporter 用 Prometheus メトリクス定義モジュール。"""
+
+import logging
+from prometheus_client import Counter, Gauge, Info
+
+logger = logging.getLogger(__name__)
 
 PREFIX = "aruba_instant"
+
+
+class _CounterLabelProxy:
+    """Proxy returned by CounterTracker.labels() that mimics the Gauge.labels() API.
+
+    Gauge.labels() の API を模倣するプロキシクラス。CounterTracker.labels() が返す。"""
+
+    def __init__(self, tracker, labels_dict):
+        self._tracker = tracker
+        self._labels = labels_dict
+
+    def set(self, value):
+        """Accept an absolute value and delegate to CounterTracker.
+
+        絶対値を受け取り CounterTracker に委譲する。"""
+        self._tracker._set_absolute(self._labels, value)
+
+
+class CounterTracker:
+    """Wraps a prometheus_client Counter to accept absolute monotonic values.
+
+    AP から取得した累積カウンター値を Prometheus Counter に変換するラッパークラス。
+    前回値を追跡してデルタを計算し、AP 再起動によるリセットも検出する。
+    """
+
+    def __init__(self, counter):
+        self._counter = counter
+        # Maps label-key tuple -> last seen absolute value
+        # ラベルキーのタプル -> 前回の絶対値 のマッピング
+        self._prev: dict = {}
+
+    def labels(self, **kwargs) -> _CounterLabelProxy:
+        """Return a proxy with .set() that accepts absolute values.
+
+        絶対値を受け付ける .set() メソッドを持つプロキシを返す。"""
+        return _CounterLabelProxy(self, kwargs)
+
+    def _set_absolute(self, labels_dict: dict, new_value: float) -> None:
+        """Update the underlying Counter from an absolute cumulative value.
+
+        累積絶対値から内部 Counter を更新する。デルタが負の場合は AP 再起動と判定する。"""
+        key = tuple(sorted(labels_dict.items()))
+        prev = self._prev.get(key)
+        if prev is None:
+            # First observation: seed the counter with the current absolute value
+            # 初回観測: 現在の絶対値でカウンターを初期化
+            self._counter.labels(**labels_dict).inc(new_value)
+        else:
+            delta = new_value - prev
+            if delta < 0:
+                # Reset detected (e.g. AP reboot): treat new_value as a fresh increment
+                # リセット検出（AP 再起動など）: 新しい値をそのままインクリメント
+                logger.debug(
+                    "Counter reset detected %s: %s -> %s", labels_dict, prev, new_value
+                )
+                self._counter.labels(**labels_dict).inc(new_value)
+            elif delta > 0:
+                self._counter.labels(**labels_dict).inc(delta)
+        self._prev[key] = new_value
+
 
 # ── AP Info ──────────────────────────────────────────────────────────
 # ── AP情報 ───────────────────────────────────────────────────────────
@@ -43,52 +108,56 @@ interface_speed_mbps = Gauge(
     "Interface speed in Mbps",
     ["interface"],
 )
-interface_rx_packets_total = Gauge(
+# Counters: cumulative values from AP, converted via CounterTracker
+# Counter: AP からの累積値。CounterTracker 経由で変換する
+interface_rx_packets_total = CounterTracker(Counter(
     f"{PREFIX}_interface_rx_packets_total",
     "Total received packets",
     ["interface"],
-)
-interface_rx_bytes_total = Gauge(
+))
+interface_rx_bytes_total = CounterTracker(Counter(
     f"{PREFIX}_interface_rx_bytes_total",
     "Total received bytes",
     ["interface"],
-)
-interface_tx_packets_total = Gauge(
+))
+interface_tx_packets_total = CounterTracker(Counter(
     f"{PREFIX}_interface_tx_packets_total",
     "Total transmitted packets",
     ["interface"],
-)
-interface_tx_bytes_total = Gauge(
+))
+interface_tx_bytes_total = CounterTracker(Counter(
     f"{PREFIX}_interface_tx_bytes_total",
     "Total transmitted bytes",
     ["interface"],
-)
-interface_rx_errors_total = Gauge(
+))
+interface_rx_errors_total = CounterTracker(Counter(
     f"{PREFIX}_interface_rx_errors_total",
     "Total receive errors",
     ["interface"],
-)
-interface_tx_errors_total = Gauge(
+))
+interface_tx_errors_total = CounterTracker(Counter(
     f"{PREFIX}_interface_tx_errors_total",
     "Total transmit errors",
     ["interface"],
-)
-interface_rx_dropped_total = Gauge(
+))
+interface_rx_dropped_total = CounterTracker(Counter(
     f"{PREFIX}_interface_rx_dropped_total",
     "Total receive dropped",
     ["interface"],
-)
-interface_tx_dropped_total = Gauge(
+))
+interface_tx_dropped_total = CounterTracker(Counter(
     f"{PREFIX}_interface_tx_dropped_total",
     "Total transmit dropped",
     ["interface"],
-)
+))
 
 # ── WiFi Clients ─────────────────────────────────────────────────────
 # ── Wi-Fiクライアント ───────────────────────────────────────────────
-clients_total = Gauge(
-    f"{PREFIX}_clients_total",
-    "Total number of connected WiFi clients",
+# Note: 'clients' is a current gauge (not a counter) – number of currently connected clients
+# 注: 'clients' は現在の接続クライアント数を表すゲージ（累積カウンターではない）
+clients = Gauge(
+    f"{PREFIX}_clients",
+    "Number of currently connected WiFi clients",
 )
 client_signal_dbm = Gauge(
     f"{PREFIX}_client_signal_dbm",
@@ -108,21 +177,21 @@ radio_channel = Gauge(
     "Current radio channel",
     ["radio", "phy_type"],
 )
-radio_packets_read_total = Gauge(
+radio_packets_read_total = CounterTracker(Counter(
     f"{PREFIX}_radio_packets_read_total",
     "Total packets read by radio",
     ["radio"],
-)
-radio_bytes_read_total = Gauge(
+))
+radio_bytes_read_total = CounterTracker(Counter(
     f"{PREFIX}_radio_bytes_read_total",
     "Total bytes read by radio",
     ["radio"],
-)
-radio_buffer_overflows_total = Gauge(
+))
+radio_buffer_overflows_total = CounterTracker(Counter(
     f"{PREFIX}_radio_buffer_overflows_total",
     "Total radio buffer overflows",
     ["radio"],
-)
+))
 radio_max_pps = Gauge(
     f"{PREFIX}_radio_max_pps",
     "Maximum packets per second observed",
@@ -136,16 +205,16 @@ radio_cur_pps = Gauge(
 
 # Radio DATA counters
 # Radio DATAフレームカウンター
-radio_data_packets_total = Gauge(
+radio_data_packets_total = CounterTracker(Counter(
     f"{PREFIX}_radio_data_packets_total",
     "Total data packets",
     ["radio"],
-)
-radio_data_bytes_total = Gauge(
+))
+radio_data_bytes_total = CounterTracker(Counter(
     f"{PREFIX}_radio_data_bytes_total",
     "Total data bytes",
     ["radio"],
-)
+))
 radio_data_cur_pps = Gauge(
     f"{PREFIX}_radio_data_cur_pps",
     "Current data packets per second",
@@ -159,29 +228,29 @@ radio_data_cur_bps = Gauge(
 
 # Radio MGMT counters
 # Radio MANAGEMENTフレームカウンター
-radio_mgmt_packets_total = Gauge(
+radio_mgmt_packets_total = CounterTracker(Counter(
     f"{PREFIX}_radio_mgmt_packets_total",
     "Total management packets",
     ["radio"],
-)
-radio_mgmt_bytes_total = Gauge(
+))
+radio_mgmt_bytes_total = CounterTracker(Counter(
     f"{PREFIX}_radio_mgmt_bytes_total",
     "Total management bytes",
     ["radio"],
-)
+))
 
 # Radio CTRL counters
 # Radio CONTROLフレームカウンター
-radio_ctrl_packets_total = Gauge(
+radio_ctrl_packets_total = CounterTracker(Counter(
     f"{PREFIX}_radio_ctrl_packets_total",
     "Total control packets",
     ["radio"],
-)
-radio_ctrl_bytes_total = Gauge(
+))
+radio_ctrl_bytes_total = CounterTracker(Counter(
     f"{PREFIX}_radio_ctrl_bytes_total",
     "Total control bytes",
     ["radio"],
-)
+))
 
 # Radio stats (from show ap debug radio-stats)
 # Radioステータス（show ap debug radio-stats から取得）
@@ -200,36 +269,36 @@ radio_max_eirp_dbm = Gauge(
     "Maximum EIRP in dBm",
     ["radio"],
 )
-radio_resets_total = Gauge(
+radio_resets_total = CounterTracker(Counter(
     f"{PREFIX}_radio_resets_total",
     "Total radio resets",
     ["radio"],
-)
-radio_channel_changes_total = Gauge(
+))
+radio_channel_changes_total = CounterTracker(Counter(
     f"{PREFIX}_radio_channel_changes_total",
     "Total channel changes",
     ["radio"],
-)
-radio_tx_power_changes_total = Gauge(
+))
+radio_tx_power_changes_total = CounterTracker(Counter(
     f"{PREFIX}_radio_tx_power_changes_total",
     "Total TX power changes",
     ["radio"],
-)
-radio_tx_frames_total = Gauge(
+))
+radio_tx_frames_total = CounterTracker(Counter(
     f"{PREFIX}_radio_tx_frames_transmitted_total",
     "Total TX frames transmitted",
     ["radio"],
-)
-radio_tx_retries_total = Gauge(
+))
+radio_tx_retries_total = CounterTracker(Counter(
     f"{PREFIX}_radio_tx_retries_total",
     "Total TX retries",
     ["radio"],
-)
-radio_rx_crc_errors_total = Gauge(
+))
+radio_rx_crc_errors_total = CounterTracker(Counter(
     f"{PREFIX}_radio_rx_crc_errors_total",
     "Total RX CRC errors",
     ["radio"],
-)
+))
 
 # ── Channel Quality (from ARM RF summary) ────────────────────────────
 # ── チャネル品質（ARM RFサマリーから取得）──────────────────────────
@@ -251,11 +320,11 @@ channel_utilization_percent = Gauge(
 
 # ── Wired stats (from monitor status) ────────────────────────────────
 # ── 有線統計（monitor status から取得）──────────────────────────────
-wired_packets_total = Gauge(
+wired_packets_total = CounterTracker(Counter(
     f"{PREFIX}_wired_packets_total",
     "Total wired interface packets",
     ["interface"],
-)
+))
 
 # ── Collector health ─────────────────────────────────────────────────
 # ── コレクターヘルス（収集状態メトリクス）─────────────────────────

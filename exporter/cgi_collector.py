@@ -190,7 +190,7 @@ class CGICollector:
             count = int(count_str)
         except ValueError:
             count = 0
-        m.clients_total.set(count)
+        m.clients.set(count)
 
         # Per-client metrics from table
         # テーブルから各クライアントのメトリクスを取得
