@@ -170,13 +170,13 @@ class CGICollector:
             self._collect_radio_stats()
             self._collect_rf_summary()
             m.collector_success.labels(collector="cgi").set(1)
+            m.collector_last_success_timestamp.labels(collector="cgi").set(time.time())
             logger.debug("CGI collection completed in %.2fs", time.time() - t0)
         except Exception:
             m.collector_success.labels(collector="cgi").set(0)
             logger.exception("CGI collection failed")
         finally:
             m.collector_duration_seconds.labels(collector="cgi").set(time.time() - t0)
-            m.collector_last_scrape_timestamp.labels(collector="cgi").set(time.time())
             self._logout()
 
     def _collect_clients(self):
@@ -184,6 +184,12 @@ class CGICollector:
 
         'show clients' を解析してクライアントメトリクスを更新する。"""
         parsed = self._execute("show clients")
+
+        # Clear stale per-client label sets from the previous cycle to prevent
+        # unbounded cardinality growth when clients disconnect.
+        # 前回サイクルの古いクライアントラベルをクリアし、無限の cardinality 増加を防ぐ。
+        m.client_signal_dbm.clear()
+        m.client_speed_mbps.clear()
 
         # Client count from data field
         # dataフィールドからクライアント接続数を取得

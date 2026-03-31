@@ -81,7 +81,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 
 | メトリクス | 説明 | ラベル |
 |-----------|------|--------|
-| `aruba_instant_memory_bytes` | メモリ量（バイト） | `type`（total/free/available/cached/buffers/slab） |
+| `aruba_instant_memory_bytes` | メモリ量（バイト） | `type`（total/free/available/cached/buffers/slab/active/inactive/swap_total/swap_free） |
 
 ### 有線インターフェース
 
@@ -141,7 +141,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 |-----------|------|--------|
 | `aruba_instant_collector_success` | 収集成功フラグ（1=成功） | `collector` |
 | `aruba_instant_collector_duration_seconds` | 収集所要時間（秒） | `collector` |
-| `aruba_instant_collector_last_scrape_timestamp` | 最終スクレイプ時刻（Unix タイム） | `collector` |
+| `aruba_instant_collector_last_success_timestamp` | 最終スクレイプ成功時刻（Unix タイム） | `collector` |
 
 ---
 
@@ -227,6 +227,8 @@ python3 -m exporter.main
 | `ENABLE_CGI` | | `true` | CGI コレクターの有効/無効 |
 | `SSH_TIMEOUT` | | `15` | SSH 接続タイムアウト（秒） |
 | `CGI_TIMEOUT` | | `15` | CGI リクエストタイムアウト（秒） |
+| `SSL_VERIFY` | | `false` | Web GUI への HTTPS 接続でサーバ証明書を検証するか（本番環境では `true` 推奨） |
+| `SSH_STRICT_HOST_KEY` | | `false` | SSH ホスト鍵を厳密に検証するか（本番環境では `known_hosts` 設定後に `true` 推奨） |
 | `LOG_LEVEL` | | `INFO` | ログレベル: DEBUG / INFO / WARNING / ERROR |
 
 > **注意**: `COLLECT_INTERVAL` は exporter が AP をポーリングする間隔です。  

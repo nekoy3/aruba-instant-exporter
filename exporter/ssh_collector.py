@@ -98,7 +98,7 @@ class SSHCollector:
         # period (0.5 s with no new data) to avoid truncating slow responses.
         # プロンプト検出またはタイムアウトまで読み続ける。
         # データが来る限り読み続け、0.5秒間データがなかった場合のみ終了する。
-        deadline = time.time() + 10
+        deadline = time.time() + self.config.ssh_timeout
         quiet_since = None
         while time.time() < deadline:
             if self._shell.recv_ready():
@@ -107,9 +107,9 @@ class SSHCollector:
                 quiet_since = None
                 if not chunk:
                     break
-                # Stop early if we see a shell prompt
-                # シェルプロンプトが見えたら早期終了
-                if output.decode(errors="replace").rstrip().endswith("#"):
+                # Stop early if we see a shell prompt (check bytes tail to avoid O(n²) decode)
+                # シェルプロンプトが見えたら早期終了（O(n²)デコードを避けるためバイト末尾を確認）
+                if output[-1024:].rstrip().endswith(b"#"):
                     break
             else:
                 if quiet_since is None:
@@ -141,6 +141,7 @@ class SSHCollector:
             self._collect_memory()
             self._collect_interface()
             m.collector_success.labels(collector="ssh").set(1)
+            m.collector_last_success_timestamp.labels(collector="ssh").set(time.time())
             logger.debug("SSH collection completed in %.2fs", time.time() - t0)
         except Exception:
             m.collector_success.labels(collector="ssh").set(0)
@@ -148,7 +149,6 @@ class SSHCollector:
             self._close()
         finally:
             m.collector_duration_seconds.labels(collector="ssh").set(time.time() - t0)
-            m.collector_last_scrape_timestamp.labels(collector="ssh").set(time.time())
             self._close()
 
     def _collect_cpu(self):

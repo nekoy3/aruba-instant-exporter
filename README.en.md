@@ -81,7 +81,7 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 
 | Metric | Description | Labels |
 |--------|-------------|--------|
-| `aruba_instant_memory_bytes` | Memory in bytes | `type` (total/free/available/cached/buffers/slab) |
+| `aruba_instant_memory_bytes` | Memory in bytes | `type` (total/free/available/cached/buffers/slab/active/inactive/swap_total/swap_free) |
 
 ### Wired Interface
 
@@ -141,7 +141,7 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 |--------|-------------|--------|
 | `aruba_instant_collector_success` | 1 if last collection succeeded | `collector` (ssh/cgi) |
 | `aruba_instant_collector_duration_seconds` | Collection duration | `collector` |
-| `aruba_instant_collector_last_success_timestamp` | Unix timestamp of last success | `collector` |
+| `aruba_instant_collector_last_success_timestamp` | Unix timestamp of last successful scrape | `collector` |
 
 ---
 
@@ -227,6 +227,8 @@ All settings are via environment variables (or `.env` file).
 | `ENABLE_CGI` | | `true` | Enable CGI collector |
 | `SSH_TIMEOUT` | | `15` | SSH connection timeout (seconds) |
 | `CGI_TIMEOUT` | | `15` | CGI request timeout (seconds) |
+| `SSL_VERIFY` | | `false` | Verify HTTPS certificate for Web GUI (`true` recommended in production with valid CA-signed certs). When `false`, self-signed/invalid certs are accepted. |
+| `SSH_STRICT_HOST_KEY` | | `false` | Enforce strict SSH host key checking (`true` recommended in production after populating `known_hosts`). When `false`, host key changes are not treated as fatal. |
 | `LOG_LEVEL` | | `INFO` | Log level: DEBUG / INFO / WARNING / ERROR |
 
 > **Note**: `COLLECT_INTERVAL` controls how often the exporter polls the AP internally.  

@@ -52,9 +52,10 @@ class CounterTracker:
         key = tuple(sorted(labels_dict.items()))
         prev = self._prev.get(key)
         if prev is None:
-            # First observation: seed the counter with the current absolute value
-            # 初回観測: 現在の絶対値でカウンターを初期化
-            self._counter.labels(**labels_dict).inc(new_value)
+            # First observation: treat as baseline only, do not increment Counter
+            # 初回観測: ベースラインとして保持するだけで、Counter をインクリメントしない
+            self._prev[key] = new_value
+            return
         else:
             delta = new_value - prev
             if delta < 0:
@@ -338,8 +339,8 @@ collector_duration_seconds = Gauge(
     "Duration of last collection in seconds",
     ["collector"],
 )
-collector_last_scrape_timestamp = Gauge(
-    f"{PREFIX}_collector_last_scrape_timestamp",
-    "Unix timestamp of last scrape attempt",
+collector_last_success_timestamp = Gauge(
+    f"{PREFIX}_collector_last_success_timestamp",
+    "Unix timestamp of last successful scrape",
     ["collector"],
 )
