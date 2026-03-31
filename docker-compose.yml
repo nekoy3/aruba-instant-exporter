@@ -1,0 +1,16 @@
+services:
+  aruba-instant-exporter:
+    build: .
+    container_name: aruba-instant-exporter
+    restart: unless-stopped
+    ports:
+      - "9877:9877"
+    env_file:
+      - .env
+    # Or specify environment variables directly:
+    # environment:
+    #   ARUBA_HOST: "192.168.1.4"
+    #   ARUBA_SSH_USERNAME: "admin"
+    #   ARUBA_SSH_PASSWORD: "your_password"
+    #   EXPORTER_PORT: "9877"
+    #   COLLECT_INTERVAL: "30"
