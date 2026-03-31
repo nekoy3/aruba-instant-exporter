@@ -168,7 +168,7 @@ Aruba Instant AP で SSH を有効化する必要があります：
 **1. リポジトリをクローン**
 
 ```bash
-git clone https://github.com/your-username/aruba-instant-exporter.git
+git clone https://github.com/nekoy3/aruba-instant-exporter.git
 cd aruba-instant-exporter
 ```
 
