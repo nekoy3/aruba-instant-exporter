@@ -37,6 +37,14 @@ class Config:
         self.enable_ssh = os.environ.get("ENABLE_SSH", "true").lower() == "true"
         self.enable_cgi = os.environ.get("ENABLE_CGI", "true").lower() == "true"
 
+        # Security: SSL verification for CGI (default: disabled for self-signed AP certs)
+        # セキュリティ: CGI の SSL 証明書検証（デフォルト: AP の自己署名証明書のため無効）
+        self.ssl_verify = os.environ.get("SSL_VERIFY", "false").lower() == "true"
+
+        # Security: SSH host key verification (default: disabled for lab convenience)
+        # セキュリティ: SSH ホスト鍵検証（デフォルト: ラボ環境の利便性のため無効）
+        self.ssh_strict_host_key = os.environ.get("SSH_STRICT_HOST_KEY", "false").lower() == "true"
+
     def validate(self):
         """Validate required configuration.
 

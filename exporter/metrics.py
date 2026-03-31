@@ -271,6 +271,6 @@ collector_duration_seconds = Gauge(
 )
 collector_last_scrape_timestamp = Gauge(
     f"{PREFIX}_collector_last_scrape_timestamp",
-    "Unix timestamp of last successful collection",
+    "Unix timestamp of last scrape attempt",
     ["collector"],
 )

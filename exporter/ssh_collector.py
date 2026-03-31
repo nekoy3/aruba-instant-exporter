@@ -54,7 +54,15 @@ class SSHCollector:
 
         logger.debug("Connecting to %s via SSH", self.config.aruba_host)
         client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        if self.config.ssh_strict_host_key:
+            # Use known_hosts for host key verification (secure default)
+            # セキュアなデフォルト設定：known_hosts でホスト鍵を検証
+            client.load_system_host_keys()
+            client.set_missing_host_key_policy(paramiko.RejectPolicy())
+        else:
+            # Automatically accept any host key (insecure, for lab use)
+            # 任意のホスト鍵を自動的に受け入れる（セキュリティ上のリスクあり、ラボ用途向け）
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             self.config.aruba_host,
             username=self.config.ssh_username,

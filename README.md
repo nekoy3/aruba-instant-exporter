@@ -141,7 +141,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 |-----------|------|--------|
 | `aruba_instant_collector_success` | 収集成功フラグ（1=成功） | `collector` |
 | `aruba_instant_collector_duration_seconds` | 収集所要時間（秒） | `collector` |
-| `aruba_instant_collector_last_success_timestamp` | 最終成功時刻（Unix タイム） | `collector` |
+| `aruba_instant_collector_last_scrape_timestamp` | 最終スクレイプ時刻（Unix タイム） | `collector` |
 
 ---
 
@@ -168,7 +168,7 @@ Aruba Instant AP で SSH を有効化する必要があります：
 **1. リポジトリをクローン**
 
 ```bash
-git clone https://github.com/your-username/aruba-instant-exporter.git
+git clone https://github.com/nekoy3/aruba-instant-exporter.git
 cd aruba-instant-exporter
 ```
 
@@ -225,6 +225,8 @@ python3 -m exporter.main
 | `COLLECT_INTERVAL` | | `30` | AP へのポーリング間隔（秒） |
 | `ENABLE_SSH` | | `true` | SSH コレクターの有効/無効 |
 | `ENABLE_CGI` | | `true` | CGI コレクターの有効/無効 |
+| `SSL_VERIFY` | | `false` | CGI の SSL 証明書検証（AP の自己署名証明書には `false`） |
+| `SSH_STRICT_HOST_KEY` | | `false` | SSH ホスト鍵検証（known_hosts による検証。本番環境では `true` 推奨） |
 | `SSH_TIMEOUT` | | `15` | SSH 接続タイムアウト（秒） |
 | `CGI_TIMEOUT` | | `15` | CGI リクエストタイムアウト（秒） |
 | `LOG_LEVEL` | | `INFO` | ログレベル: DEBUG / INFO / WARNING / ERROR |
@@ -278,7 +280,7 @@ aruba_instant_collector_success{collector="cgi"} 0
   ```
   aruba_instant_collector_success
   aruba_instant_collector_duration_seconds
-  aruba_instant_collector_last_success_timestamp
+  aruba_instant_collector_last_scrape_timestamp
   ```
 
 ### 5GHz のチャネル品質が取得できない

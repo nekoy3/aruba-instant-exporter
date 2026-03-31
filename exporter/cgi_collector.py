@@ -18,7 +18,6 @@ import logging
 import xml.etree.ElementTree as ET
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
-from urllib.error import URLError
 
 from . import metrics as m
 
@@ -100,8 +99,13 @@ class CGICollector:
             f"https://{config.aruba_host}:{config.web_port}/swarm.cgi"
         )
         self._ssl_ctx = ssl.create_default_context()
-        self._ssl_ctx.check_hostname = False
-        self._ssl_ctx.verify_mode = ssl.CERT_NONE
+        if not config.ssl_verify:
+            # Disable SSL verification for self-signed certificates (common on APs)
+            # 自己署名証明書に対応するため SSL 検証を無効化（AP では一般的）
+            self._ssl_ctx.check_hostname = False
+            self._ssl_ctx.verify_mode = ssl.CERT_NONE
+        else:
+            logger.debug("SSL verification enabled")
 
     def _request(self, data_dict):
         """Send a POST request to swarm.cgi.
@@ -275,7 +279,9 @@ class CGICollector:
                 continue
             iface_raw = row[0]
             _, iface = _extract_radio_name(iface_raw) if "(" in iface_raw else (iface_raw, iface_raw)
-            data = dict(zip(headers, row))
+            # Normalize header keys to lowercase to handle "Pkts"/"PKTS"/"pkts" variations
+            # ヘッダーキーを小文字に正規化（"Pkts"/"PKTS"/"pkts" 等のバリエーションに対応）
+            data = {str(k).strip().lower(): v for k, v in zip(headers, row)}
             try:
                 m.wired_packets_total.labels(interface=iface).set(
                     int(data.get("pkts", 0))
