@@ -93,17 +93,30 @@ class SSHCollector:
         time.sleep(wait)
 
         output = b""
-        deadline = time.time() + 5
+        # Drain until prompt detected or deadline reached.
+        # Keep reading as long as data arrives; only break after a quiet
+        # period (0.5 s with no new data) to avoid truncating slow responses.
+        # プロンプト検出またはタイムアウトまで読み続ける。
+        # データが来る限り読み続け、0.5秒間データがなかった場合のみ終了する。
+        deadline = time.time() + 10
+        quiet_since = None
         while time.time() < deadline:
             if self._shell.recv_ready():
                 chunk = self._shell.recv(65535)
                 output += chunk
+                quiet_since = None
                 if not chunk:
                     break
-            else:
-                time.sleep(0.2)
-                if not self._shell.recv_ready():
+                # Stop early if we see a shell prompt
+                # シェルプロンプトが見えたら早期終了
+                if output.decode(errors="replace").rstrip().endswith("#"):
                     break
+            else:
+                if quiet_since is None:
+                    quiet_since = time.time()
+                elif time.time() - quiet_since >= 0.5:
+                    break
+                time.sleep(0.1)
 
         text = output.decode(errors="replace")
         # Strip the echoed command and trailing prompt

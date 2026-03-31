@@ -68,7 +68,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 
 | メトリクス | 説明 | ラベル |
 |-----------|------|--------|
-| `aruba_instant_ap_info` | AP 情報（常に 1） | `ap_name`, `ap_type`, `country_code`, `ip_addr` |
+| `aruba_instant_ap_info` | AP 情報（常に 1） | `ap_name`, `ap_type`, `country_code` |
 | `aruba_instant_uptime_seconds` | AP 稼働時間（秒） | — |
 
 ### CPU
@@ -100,7 +100,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 
 | メトリクス | 説明 | ラベル |
 |-----------|------|--------|
-| `aruba_instant_radio_channel` | 使用チャネル番号 | `radio` |
+| `aruba_instant_radio_channel` | 使用チャネル番号 | `radio`, `phy_type` |
 | `aruba_instant_radio_eirp_dbm` | 送信電力（dBm） | `radio` |
 | `aruba_instant_radio_max_eirp_dbm` | 最大送信電力（dBm） | `radio` |
 | `aruba_instant_radio_noise_floor_dbm` | ノイズフロア（dBm） | `radio` |

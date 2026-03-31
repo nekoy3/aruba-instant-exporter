@@ -68,7 +68,7 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 
 | Metric | Description | Labels |
 |--------|-------------|--------|
-| `aruba_instant_ap_info` | AP information (always 1) | `ap_name`, `ap_type`, `country_code`, `ip_addr` |
+| `aruba_instant_ap_info` | AP information (always 1) | `ap_name`, `ap_type`, `country_code` |
 | `aruba_instant_uptime_seconds` | AP uptime in seconds | — |
 
 ### CPU
@@ -100,7 +100,7 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 
 | Metric | Description | Labels |
 |--------|-------------|--------|
-| `aruba_instant_radio_channel` | Current channel number | `radio` |
+| `aruba_instant_radio_channel` | Current channel number | `radio`, `phy_type` |
 | `aruba_instant_radio_eirp_dbm` | Transmit power (dBm) | `radio` |
 | `aruba_instant_radio_max_eirp_dbm` | Maximum transmit power (dBm) | `radio` |
 | `aruba_instant_radio_noise_floor_dbm` | Noise floor (dBm) | `radio` |

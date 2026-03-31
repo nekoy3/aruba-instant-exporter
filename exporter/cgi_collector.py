@@ -113,8 +113,10 @@ class CGICollector:
         swarm.cgi に POST リクエストを送信する。"""
         data = urlencode(data_dict).encode()
         req = Request(self._base_url, data=data, method="POST")
-        resp = urlopen(req, timeout=self.config.cgi_timeout, context=self._ssl_ctx)
-        return resp.read().decode(errors="replace")
+        # Use context manager to ensure the response is always closed
+        # レスポンスを確実にクローズするためコンテキストマネージャーを使用
+        with urlopen(req, timeout=self.config.cgi_timeout, context=self._ssl_ctx) as resp:
+            return resp.read().decode(errors="replace")
 
     def _login(self):
         """Authenticate and obtain a session ID.
