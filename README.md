@@ -123,15 +123,15 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 | `aruba_instant_radio_channel_changes_total` | チャネル変更総数 | `radio` |
 | `aruba_instant_radio_tx_power_changes_total` | 送信電力変更総数 | `radio` |
 | `aruba_instant_radio_buffer_overflows_total` | バッファオーバーフロー総数 | `radio` |
-| `aruba_instant_channel_quality` | チャネル品質（0〜100、2.4GHz のみ） | `radio` |
-| `aruba_instant_channel_noise_dbm` | チャネルノイズレベル（dBm、2.4GHz のみ） | `radio` |
-| `aruba_instant_channel_utilization_percent` | チャネル使用率（%、2.4GHz のみ） | `radio` |
+| `aruba_instant_channel_quality` | チャネル品質（0〜100、2.4GHz のみ） | `radio`, `channel` |
+| `aruba_instant_channel_noise_dbm` | チャネルノイズレベル（dBm、2.4GHz のみ） | `radio`, `channel` |
+| `aruba_instant_channel_utilization_percent` | チャネル使用率（%、2.4GHz のみ） | `radio`, `channel` |
 
 ### クライアント
 
 | メトリクス | 説明 | ラベル |
 |-----------|------|--------|
-| `aruba_instant_clients_total` | 接続クライアント総数 | — |
+| `aruba_instant_clients` | 接続クライアント総数 | — |
 | `aruba_instant_client_signal_dbm` | クライアント信号強度（dBm） | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
 | `aruba_instant_client_speed_mbps` | クライアント接続速度（Mbps） | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
 
@@ -141,7 +141,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 |-----------|------|--------|
 | `aruba_instant_collector_success` | 収集成功フラグ（1=成功） | `collector` |
 | `aruba_instant_collector_duration_seconds` | 収集所要時間（秒） | `collector` |
-| `aruba_instant_collector_last_scrape_timestamp` | 最終スクレイプ時刻（Unix タイム） | `collector` |
+| `aruba_instant_collector_last_success_timestamp` | 最終成功時刻（Unix タイム） | `collector` |
 
 ---
 
@@ -168,7 +168,7 @@ Aruba Instant AP で SSH を有効化する必要があります：
 **1. リポジトリをクローン**
 
 ```bash
-git clone https://github.com/nekoy3/aruba-instant-exporter.git
+git clone https://github.com/your-username/aruba-instant-exporter.git
 cd aruba-instant-exporter
 ```
 
@@ -225,8 +225,6 @@ python3 -m exporter.main
 | `COLLECT_INTERVAL` | | `30` | AP へのポーリング間隔（秒） |
 | `ENABLE_SSH` | | `true` | SSH コレクターの有効/無効 |
 | `ENABLE_CGI` | | `true` | CGI コレクターの有効/無効 |
-| `SSL_VERIFY` | | `false` | CGI の SSL 証明書検証（AP の自己署名証明書には `false`） |
-| `SSH_STRICT_HOST_KEY` | | `false` | SSH ホスト鍵検証（known_hosts による検証。本番環境では `true` 推奨） |
 | `SSH_TIMEOUT` | | `15` | SSH 接続タイムアウト（秒） |
 | `CGI_TIMEOUT` | | `15` | CGI リクエストタイムアウト（秒） |
 | `LOG_LEVEL` | | `INFO` | ログレベル: DEBUG / INFO / WARNING / ERROR |
@@ -280,7 +278,7 @@ aruba_instant_collector_success{collector="cgi"} 0
   ```
   aruba_instant_collector_success
   aruba_instant_collector_duration_seconds
-  aruba_instant_collector_last_scrape_timestamp
+  aruba_instant_collector_last_success_timestamp
   ```
 
 ### 5GHz のチャネル品質が取得できない

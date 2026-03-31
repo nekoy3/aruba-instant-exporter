@@ -123,15 +123,15 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 | `aruba_instant_radio_channel_changes_total` | Total channel changes | `radio` |
 | `aruba_instant_radio_tx_power_changes_total` | Total TX power changes | `radio` |
 | `aruba_instant_radio_buffer_overflows_total` | Total buffer overflows | `radio` |
-| `aruba_instant_channel_quality` | Channel quality (0–100, 2.4GHz only) | `radio` |
-| `aruba_instant_channel_noise_dbm` | Channel noise level in dBm (2.4GHz only) | `radio` |
-| `aruba_instant_channel_utilization_percent` | Channel utilization % (2.4GHz only) | `radio` |
+| `aruba_instant_channel_quality` | Channel quality (0–100, 2.4GHz only) | `radio`, `channel` |
+| `aruba_instant_channel_noise_dbm` | Channel noise level in dBm (2.4GHz only) | `radio`, `channel` |
+| `aruba_instant_channel_utilization_percent` | Channel utilization % (2.4GHz only) | `radio`, `channel` |
 
 ### Clients
 
 | Metric | Description | Labels |
 |--------|-------------|--------|
-| `aruba_instant_clients_total` | Total associated clients | — |
+| `aruba_instant_clients` | Total associated clients | — |
 | `aruba_instant_client_signal_dbm` | Client signal strength (dBm) | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
 | `aruba_instant_client_speed_mbps` | Client connection speed (Mbps) | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
 
@@ -141,7 +141,7 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 |--------|-------------|--------|
 | `aruba_instant_collector_success` | 1 if last collection succeeded | `collector` (ssh/cgi) |
 | `aruba_instant_collector_duration_seconds` | Collection duration | `collector` |
-| `aruba_instant_collector_last_scrape_timestamp` | Unix timestamp of last scrape attempt | `collector` |
+| `aruba_instant_collector_last_success_timestamp` | Unix timestamp of last success | `collector` |
 
 ---
 
@@ -225,8 +225,6 @@ All settings are via environment variables (or `.env` file).
 | `COLLECT_INTERVAL` | | `30` | Scrape interval in seconds |
 | `ENABLE_SSH` | | `true` | Enable SSH collector |
 | `ENABLE_CGI` | | `true` | Enable CGI collector |
-| `SSL_VERIFY` | | `false` | Verify CGI SSL certificate (use `false` for AP self-signed certs) |
-| `SSH_STRICT_HOST_KEY` | | `false` | Verify SSH host key via known_hosts (recommended `true` in production) |
 | `SSH_TIMEOUT` | | `15` | SSH connection timeout (seconds) |
 | `CGI_TIMEOUT` | | `15` | CGI request timeout (seconds) |
 | `LOG_LEVEL` | | `INFO` | Log level: DEBUG / INFO / WARNING / ERROR |
@@ -280,7 +278,7 @@ aruba_instant_collector_success{collector="cgi"} 0
   ```
   aruba_instant_collector_success
   aruba_instant_collector_duration_seconds
-  aruba_instant_collector_last_scrape_timestamp
+  aruba_instant_collector_last_success_timestamp
   ```
 
 ### Channel quality missing for 5GHz
