@@ -102,28 +102,38 @@ Each collector can be disabled independently via `ENABLE_SSH` / `ENABLE_CGI`. Di
 |--------|-------------|--------|
 | `aruba_instant_radio_channel` | Current channel number | `radio` |
 | `aruba_instant_radio_eirp_dbm` | Transmit power (dBm) | `radio` |
+| `aruba_instant_radio_max_eirp_dbm` | Maximum transmit power (dBm) | `radio` |
 | `aruba_instant_radio_noise_floor_dbm` | Noise floor (dBm) | `radio` |
-| `aruba_instant_radio_channel_quality` | Channel quality (0–100) | `radio` |
-| `aruba_instant_radio_tx_packets_total` | Transmitted packets | `radio` |
-| `aruba_instant_radio_rx_packets_total` | Received packets | `radio` |
-| `aruba_instant_radio_tx_bytes_total` | Transmitted bytes | `radio` |
-| `aruba_instant_radio_rx_bytes_total` | Received bytes | `radio` |
-| `aruba_instant_radio_tx_data_packets_total` | Data packets TX | `radio` |
-| `aruba_instant_radio_rx_data_packets_total` | Data packets RX | `radio` |
+| `aruba_instant_radio_packets_read_total` | Total packets read | `radio` |
+| `aruba_instant_radio_bytes_read_total` | Total bytes read | `radio` |
 | `aruba_instant_radio_cur_pps` | Current packets per second | `radio` |
-| `aruba_instant_radio_crc_errors_total` | CRC errors | `radio` |
-| `aruba_instant_radio_channel_changes_total` | Channel changes | `radio` |
+| `aruba_instant_radio_max_pps` | Maximum packets per second | `radio` |
+| `aruba_instant_radio_data_packets_total` | Total data packets | `radio` |
+| `aruba_instant_radio_data_bytes_total` | Total data bytes | `radio` |
+| `aruba_instant_radio_data_cur_pps` | Current data packets per second | `radio` |
+| `aruba_instant_radio_data_cur_bps` | Current data bytes per second | `radio` |
+| `aruba_instant_radio_mgmt_packets_total` | Total management packets | `radio` |
+| `aruba_instant_radio_mgmt_bytes_total` | Total management bytes | `radio` |
+| `aruba_instant_radio_ctrl_packets_total` | Total control packets | `radio` |
+| `aruba_instant_radio_ctrl_bytes_total` | Total control bytes | `radio` |
+| `aruba_instant_radio_tx_frames_transmitted_total` | Total TX frames transmitted | `radio` |
+| `aruba_instant_radio_tx_retries_total` | Total TX retries | `radio` |
+| `aruba_instant_radio_rx_crc_errors_total` | Total RX CRC errors | `radio` |
+| `aruba_instant_radio_resets_total` | Total radio resets | `radio` |
+| `aruba_instant_radio_channel_changes_total` | Total channel changes | `radio` |
+| `aruba_instant_radio_tx_power_changes_total` | Total TX power changes | `radio` |
+| `aruba_instant_radio_buffer_overflows_total` | Total buffer overflows | `radio` |
+| `aruba_instant_channel_quality` | Channel quality (0–100, 2.4GHz only) | `radio` |
+| `aruba_instant_channel_noise_dbm` | Channel noise level in dBm (2.4GHz only) | `radio` |
+| `aruba_instant_channel_utilization_percent` | Channel utilization % (2.4GHz only) | `radio` |
 
 ### Clients
 
 | Metric | Description | Labels |
 |--------|-------------|--------|
-| `aruba_instant_wifi_clients_total` | Total associated clients | — |
-| `aruba_instant_wifi_clients_by_band` | Clients per radio band | `radio` |
-| `aruba_instant_client_signal_dbm` | Client signal strength (dBm) | `mac`, `hostname`, `os`, `essid` |
-| `aruba_instant_client_snr_db` | Client SNR (dB) | `mac`, `hostname`, `os`, `essid` |
-| `aruba_instant_client_speed_mbps` | Client connection speed (Mbps) | `mac`, `hostname`, `os`, `essid` |
-| `aruba_instant_client_uptime_seconds` | Client association uptime | `mac`, `hostname`, `os`, `essid` |
+| `aruba_instant_clients_total` | Total associated clients | — |
+| `aruba_instant_client_signal_dbm` | Client signal strength (dBm) | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
+| `aruba_instant_client_speed_mbps` | Client connection speed (Mbps) | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
 
 ### Collector Health
 
@@ -171,7 +181,7 @@ cp .env.example .env
 Edit `.env` with your AP's address and credentials:
 
 ```env
-ARUBA_HOST=192.168..10.2
+ARUBA_HOST=192.168.10.2
 ARUBA_SSH_USERNAME=admin
 ARUBA_SSH_PASSWORD=your_password
 ```

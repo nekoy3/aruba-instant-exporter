@@ -102,26 +102,38 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 |-----------|------|--------|
 | `aruba_instant_radio_channel` | 使用チャネル番号 | `radio` |
 | `aruba_instant_radio_eirp_dbm` | 送信電力（dBm） | `radio` |
+| `aruba_instant_radio_max_eirp_dbm` | 最大送信電力（dBm） | `radio` |
 | `aruba_instant_radio_noise_floor_dbm` | ノイズフロア（dBm） | `radio` |
-| `aruba_instant_radio_channel_quality` | チャネル品質（0〜100） | `radio` |
-| `aruba_instant_radio_tx_packets_total` | 送信パケット数 | `radio` |
-| `aruba_instant_radio_rx_packets_total` | 受信パケット数 | `radio` |
-| `aruba_instant_radio_tx_bytes_total` | 送信バイト数 | `radio` |
-| `aruba_instant_radio_rx_bytes_total` | 受信バイト数 | `radio` |
-| `aruba_instant_radio_tx_data_packets_total` | データパケット送信数 | `radio` |
-| `aruba_instant_radio_rx_data_packets_total` | データパケット受信数 | `radio` |
-| `aruba_instant_radio_tx_mgmt_packets_total` | 管理パケット送信数 | `radio` |
-| `aruba_instant_radio_crc_errors_total` | CRC エラー数 | `radio` |
-| `aruba_instant_radio_current_pps` | 現在の PPS | `radio` |
+| `aruba_instant_radio_packets_read_total` | 受信パケット総数 | `radio` |
+| `aruba_instant_radio_bytes_read_total` | 受信バイト総数 | `radio` |
+| `aruba_instant_radio_cur_pps` | 現在の PPS | `radio` |
+| `aruba_instant_radio_max_pps` | 最大 PPS | `radio` |
+| `aruba_instant_radio_data_packets_total` | データパケット総数 | `radio` |
+| `aruba_instant_radio_data_bytes_total` | データバイト総数 | `radio` |
+| `aruba_instant_radio_data_cur_pps` | 現在のデータ PPS | `radio` |
+| `aruba_instant_radio_data_cur_bps` | 現在のデータ BPS | `radio` |
+| `aruba_instant_radio_mgmt_packets_total` | 管理パケット総数 | `radio` |
+| `aruba_instant_radio_mgmt_bytes_total` | 管理バイト総数 | `radio` |
+| `aruba_instant_radio_ctrl_packets_total` | 制御パケット総数 | `radio` |
+| `aruba_instant_radio_ctrl_bytes_total` | 制御バイト総数 | `radio` |
+| `aruba_instant_radio_tx_frames_transmitted_total` | 送信フレーム総数 | `radio` |
+| `aruba_instant_radio_tx_retries_total` | 送信リトライ総数 | `radio` |
+| `aruba_instant_radio_rx_crc_errors_total` | 受信 CRC エラー総数 | `radio` |
+| `aruba_instant_radio_resets_total` | ラジオリセット総数 | `radio` |
+| `aruba_instant_radio_channel_changes_total` | チャネル変更総数 | `radio` |
+| `aruba_instant_radio_tx_power_changes_total` | 送信電力変更総数 | `radio` |
+| `aruba_instant_radio_buffer_overflows_total` | バッファオーバーフロー総数 | `radio` |
+| `aruba_instant_channel_quality` | チャネル品質（0〜100、2.4GHz のみ） | `radio` |
+| `aruba_instant_channel_noise_dbm` | チャネルノイズレベル（dBm、2.4GHz のみ） | `radio` |
+| `aruba_instant_channel_utilization_percent` | チャネル使用率（%、2.4GHz のみ） | `radio` |
 
 ### クライアント
 
 | メトリクス | 説明 | ラベル |
 |-----------|------|--------|
-| `aruba_instant_wifi_clients_total` | 接続クライアント総数 | — |
-| `aruba_instant_wifi_clients_by_band` | バンド別接続数 | `band`（2.4GHz/5GHz） |
-| `aruba_instant_client_signal_dbm` | クライアント信号強度（dBm） | `mac`, `name`, `band`, `os` |
-| `aruba_instant_client_speed_mbps` | クライアント接続速度（Mbps） | `mac`, `name`, `band`, `os` |
+| `aruba_instant_clients_total` | 接続クライアント総数 | — |
+| `aruba_instant_client_signal_dbm` | クライアント信号強度（dBm） | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
+| `aruba_instant_client_speed_mbps` | クライアント接続速度（Mbps） | `mac`, `name`, `channel`, `essid`, `ip`, `type` |
 
 ### コレクターヘルス
 
