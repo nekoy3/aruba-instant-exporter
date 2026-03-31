@@ -141,7 +141,7 @@ Aruba Instant AP を SNMP で監視すると、クライアント数は取れま
 |-----------|------|--------|
 | `aruba_instant_collector_success` | 収集成功フラグ（1=成功） | `collector` |
 | `aruba_instant_collector_duration_seconds` | 収集所要時間（秒） | `collector` |
-| `aruba_instant_collector_last_success_timestamp` | 最終成功時刻（Unix タイム） | `collector` |
+| `aruba_instant_collector_last_scrape_timestamp` | 最終スクレイプ時刻（Unix タイム） | `collector` |
 
 ---
 
