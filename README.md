@@ -216,10 +216,10 @@ python3 -m exporter.main
 | 変数名 | 必須 | デフォルト | 説明 |
 |--------|------|-----------|------|
 | `ARUBA_HOST` | ✅ | — | AP の IP アドレスまたはホスト名 |
-| `ARUBA_SSH_USERNAME` | ✅ | — | SSH ユーザー名 |
-| `ARUBA_SSH_PASSWORD` | ✅ | — | SSH パスワード |
+| `ARUBA_SSH_USERNAME` | | `admin` | SSH ユーザー名 |
+| `ARUBA_SSH_PASSWORD` | | — | SSH パスワード（`ENABLE_SSH=true` のとき必須） |
 | `ARUBA_WEB_USERNAME` | | SSH と同じ | Web GUI ユーザー名（SSH と異なる場合） |
-| `ARUBA_WEB_PASSWORD` | | SSH と同じ | Web GUI パスワード（SSH と異なる場合） |
+| `ARUBA_WEB_PASSWORD` | | SSH と同じ | Web GUI パスワード（SSH と異なる場合。`ENABLE_CGI=true` のとき必須） |
 | `ARUBA_WEB_PORT` | | `4343` | Web GUI の HTTPS ポート |
 | `EXPORTER_PORT` | | `9877` | `/metrics` を公開する HTTP ポート |
 | `COLLECT_INTERVAL` | | `30` | AP へのポーリング間隔（秒） |

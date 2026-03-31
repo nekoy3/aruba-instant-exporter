@@ -216,10 +216,10 @@ All settings are via environment variables (or `.env` file).
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `ARUBA_HOST` | ✅ | — | AP IP address or hostname |
-| `ARUBA_SSH_USERNAME` | ✅ | — | SSH username |
-| `ARUBA_SSH_PASSWORD` | ✅ | — | SSH password |
+| `ARUBA_SSH_USERNAME` | | `admin` | SSH username |
+| `ARUBA_SSH_PASSWORD` | | — | SSH password (required when `ENABLE_SSH=true`) |
 | `ARUBA_WEB_USERNAME` | | same as SSH | Web GUI username (if different) |
-| `ARUBA_WEB_PASSWORD` | | same as SSH | Web GUI password (if different) |
+| `ARUBA_WEB_PASSWORD` | | same as SSH | Web GUI password (if different; required when `ENABLE_CGI=true`) |
 | `ARUBA_WEB_PORT` | | `4343` | Web GUI HTTPS port |
 | `EXPORTER_PORT` | | `9877` | HTTP port to expose `/metrics` |
 | `COLLECT_INTERVAL` | | `30` | Scrape interval in seconds |
